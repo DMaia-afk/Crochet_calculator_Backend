@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.models import User
 from .models import Note
 from .serializers import UserSerializer, NoteSerializer
@@ -39,3 +40,26 @@ class ListNotesView(generics.ListAPIView):
 
     def get_queryset(self):
         return Note.objects.filter(user=self.request.user)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def calculate(request):
+    data = request.data
+    # Lógica de cálculo (exemplo simples)
+    material_cost = data.get('materialCost', 0)
+    hours = data.get('hours', 0)
+    minutes = data.get('minutes', 0)
+    hourly_rate = data.get('hourlyRate', 0)
+    fixed_expenses = data.get('fixedExpenses', 0)
+    profit_margin = data.get('profitMargin', 0)
+    
+    total_hours = hours + (minutes / 60)
+    labor_cost = total_hours * hourly_rate
+    total_cost = material_cost + labor_cost + fixed_expenses
+    selling_price = total_cost / (1 - (profit_margin / 100))
+    
+    return Response({
+        'labor_cost': round(labor_cost, 2),
+        'total_cost': round(total_cost, 2),
+        'selling_price': round(selling_price, 2)
+    })
