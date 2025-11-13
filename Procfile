@@ -1,0 +1,1 @@
+web: cd Cc && gunicorn Cc.wsgi:application
