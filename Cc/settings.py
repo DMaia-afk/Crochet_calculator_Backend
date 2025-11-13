@@ -40,12 +40,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'main',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -124,6 +126,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
+
+CORS_ALLOWED_ORIGINS = [
+    'https://dmaia-afk.github.io',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
