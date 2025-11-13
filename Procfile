@@ -1,1 +1,1 @@
-web: cd Cc && PYTHONPATH=. gunicorn wsgi:application
+web: gunicorn Cc.wsgi:application
