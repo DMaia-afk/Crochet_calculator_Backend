@@ -1,6 +1,4 @@
-from rest_framework import serializers
-from django.contrib.auth.models import User
-from .models import Note
+from django.db import IntegrityError
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -19,11 +17,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password2')  # Remove antes de criar
-        user = User.objects.create_user(
-            username=validated_data['email'],  # Use email as username
-            email=validated_data['email'],
-            password=validated_data['password']
-        )
+        try:
+            user = User.objects.create_user(
+                username=validated_data['email'],  # Use email as username
+                email=validated_data['email'],
+                password=validated_data['password']
+            )
+        except IntegrityError:
+            raise serializers.ValidationError("Este email já está registrado.")
         return user
 
 class NoteSerializer(serializers.ModelSerializer):
