@@ -36,19 +36,15 @@ class LoginView(ObtainAuthToken):
             'email': user.email
         })
 
-class AddNoteView(generics.CreateAPIView):
-    serializer_class = NoteSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-class ListNotesView(generics.ListAPIView):
+class ListNotesView(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Note.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
