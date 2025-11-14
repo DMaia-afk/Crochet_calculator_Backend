@@ -6,6 +6,8 @@ from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.models import User
 from .models import Note
 from .serializers import UserSerializer, NoteSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
 
 # Create your views here.
 
@@ -45,3 +47,6 @@ def calculate(request):
         'total_cost': round(total_cost, 2),
         'selling_price': round(selling_price, 2)
     })
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
