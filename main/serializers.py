@@ -1,3 +1,6 @@
+from rest_framework import serializers
+from django.contrib.auth.models import User
+from .models import Note
 from django.db import IntegrityError
 
 class UserSerializer(serializers.ModelSerializer):
