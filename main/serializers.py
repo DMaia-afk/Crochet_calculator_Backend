@@ -13,6 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['password'] != data['password2']:
             raise serializers.ValidationError("As senhas não coincidem.")
+        if User.objects.filter(email=data['email']).exists():
+            raise serializers.ValidationError("Este email já está registrado.")
         return data
 
     def create(self, validated_data):
