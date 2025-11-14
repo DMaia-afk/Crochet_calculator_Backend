@@ -26,18 +26,24 @@ class ListNotesView(generics.ListCreateAPIView):
         data = serializer.validated_data
         # Calculate total_price (selling_price) if not provided
         if 'total_price' not in data or data.get('total_price') is None:
-            material_cost = data.get('material_cost', 0)
-            hours = data.get('hours', 0)
-            minutes = data.get('minutes', 0)
-            hourly_rate = data.get('hourly_rate', 0)
-            fixed_expenses = data.get('fixed_expenses', 0)
-            profit_margin = data.get('profit_margin', 0)
-            
-            total_hours = hours + (minutes / 60)
-            labor_cost = total_hours * hourly_rate
-            total_cost = material_cost + labor_cost + fixed_expenses
-            selling_price = total_cost / (1 - (profit_margin / 100)) if profit_margin < 100 else total_cost
-            data['total_price'] = round(selling_price, 2)
+            try:
+                material_cost = float(data.get('material_cost', 0) or 0)
+                hours = float(data.get('hours', 0) or 0)
+                minutes = float(data.get('minutes', 0) or 0)
+                hourly_rate = float(data.get('hourly_rate', 0) or 0)
+                fixed_expenses = float(data.get('fixed_expenses', 0) or 0)
+                profit_margin = float(data.get('profit_margin', 0) or 0)
+                
+                total_hours = hours + (minutes / 60)
+                labor_cost = total_hours * hourly_rate
+                total_cost = material_cost + labor_cost + fixed_expenses
+                if profit_margin >= 100:
+                    selling_price = total_cost
+                else:
+                    selling_price = total_cost / (1 - (profit_margin / 100))
+                data['total_price'] = round(selling_price, 2)
+            except (ValueError, ZeroDivisionError, TypeError):
+                data['total_price'] = 0.0  # Default if calculation fails
         serializer.save(user=self.request.user)
 
 @api_view(['POST'])
