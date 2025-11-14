@@ -29,3 +29,7 @@ class NoteSerializer(serializers.ModelSerializer):
         model = Note
         fields = ('id', 'title', 'material_cost', 'hours', 'minutes', 'hourly_rate', 'fixed_expenses', 'profit_margin', 'total_price', 'created_at')
         read_only_fields = ('id', 'created_at')
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()

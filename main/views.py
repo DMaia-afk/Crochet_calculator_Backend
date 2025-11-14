@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import generics, status
+from rest_framework import generics, status, serializers
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
@@ -7,7 +7,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.models import User
 from .models import Note
-from .serializers import UserSerializer, NoteSerializer
+from .serializers import UserSerializer, NoteSerializer, LoginSerializer
 
 # Create your views here.
 
@@ -16,10 +16,19 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
 class LoginView(ObtainAuthToken):
+    serializer_class = LoginSerializer
+
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Invalid credentials")
+        if not user.check_password(password):
+            raise serializers.ValidationError("Invalid credentials")
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'access': token.key,
