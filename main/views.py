@@ -26,7 +26,6 @@ class ListNotesView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def calculate(request):
     data = request.data
     # Lógica de cálculo (exemplo simples)
