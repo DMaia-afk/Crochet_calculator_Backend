@@ -22,10 +22,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password2')  # Remove antes de criar
+        email_lower = validated_data['email'].lower()
         try:
             user = User.objects.create_user(
-                username=validated_data['email'],  # Use email as username
-                email=validated_data['email'],
+                username=email_lower,  # Use email as username, lowercase
+                email=email_lower,
                 password=validated_data['password']
             )
         except IntegrityError:
@@ -44,3 +45,7 @@ class LoginSerializer(serializers.Serializer):
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     username_field = 'email'
+
+    def validate(self, attrs):
+        attrs['email'] = attrs['email'].lower()
+        return super().validate(attrs)
