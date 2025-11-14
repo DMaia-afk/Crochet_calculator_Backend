@@ -44,8 +44,4 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField()
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    username_field = 'email'
-
-    def validate(self, attrs):
-        attrs['email'] = attrs['email'].lower()
-        return super().validate(attrs)
+    username_field = 'username'
